@@ -4,9 +4,7 @@ import { ChevronDown } from 'lucide-react'; // Added for accordion
 import './globals.css';
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
+  subsets: ['latin'],                                   display: 'swap',                                      variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
@@ -143,13 +141,6 @@ export default function RootLayout({
           {/* New Professional Dark Footer */}
           <footer className="bg-gray-900 text-gray-300 mt-20">
             <div className="container mx-auto px-4 py-12">
-              {/* Traction Badge */}
-              <div className="text-center mb-12">
-                <span className="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-full text-xl shadow-2xl">
-                  Over 500 users have tested and confirmed UltimateShield's intelligence
-                </span>
-              </div>
-
               {/* Desktop Grid */}
               <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-5 gap-10">
                 {/* Product */}

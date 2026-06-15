@@ -14,12 +14,6 @@ export default function WhitepaperPage() {
       </p>
 
       <div className="prose prose-lg mx-auto text-gray-700 space-y-8">
-        <div className="text-center mb-12">
-          <p className="text-xl font-semibold">
-            Over 500 users have tested and confirmed UltimateShield's intelligence.
-          </p>
-        </div>
-
         <section>
           <h2>1. Executive Summary</h2>
           <p>
