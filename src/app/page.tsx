@@ -70,13 +70,13 @@ export default function UltimateShieldScanner() {
   const [error, setError] = useState('');
   const [scanHistory, setScanHistory] = useState<string[]>([]);
   const [exportingPDF, setExportingPDF] = useState(false);
-  
+
   // Sorting and pagination state
   const [txSortConfig, setTxSortConfig] = useState<SortConfig>(null);
   const [addrSortConfig, setAddrSortConfig] = useState<SortConfig>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  
+
   // Cache indicator
   const [cached, setCached] = useState(false);
   const [cacheTimestamp, setCacheTimestamp] = useState<number | null>(null);
@@ -146,7 +146,6 @@ export default function UltimateShieldScanner() {
         setCached(true);
         setCacheTimestamp(Date.now());
         setError('');
-        // Still add to history if not already there
         if (!scanHistory.includes(trimmedAddress)) {
           const newHistory = [trimmedAddress, ...scanHistory.slice(0, 4)];
           saveHistory(newHistory);
@@ -176,7 +175,6 @@ export default function UltimateShieldScanner() {
       setScanResult(data);
       saveToCache(trimmedAddress, data);
 
-      // Update history
       if (!scanHistory.includes(trimmedAddress)) {
         const newHistory = [trimmedAddress, ...scanHistory.slice(0, 4)];
         saveHistory(newHistory);
@@ -215,8 +213,8 @@ export default function UltimateShieldScanner() {
         format: 'a4'
       });
 
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
+      const imgWidth = 210;
+      const pageHeight = 297;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       let position = 0;
 
@@ -298,11 +296,14 @@ export default function UltimateShieldScanner() {
     return 'bg-green-50 border-green-200';
   };
 
-  const formatBTC = (amount: number) => {
-    if (amount === 0) return '0 BTC';
-    if (amount < 0.001) return `${amount.toFixed(8)} BTC`;
-    if (amount < 1) return `${amount.toFixed(6)} BTC`;
-    return `${amount.toFixed(3)} BTC`;
+  // SAFE formatBTC function – handles any input
+  const formatBTC = (amount: any): string => {
+    if (amount === undefined || amount === null || amount === '') return '0 BTC';
+    const num = typeof amount === 'string' ? parseFloat(amount) : Number(amount);
+    if (isNaN(num) || num === 0) return '0 BTC';
+    if (num < 0.001) return `${num.toFixed(8)} BTC`;
+    if (num < 1) return `${num.toFixed(6)} BTC`;
+    return `${num.toFixed(3)} BTC`;
   };
 
   const formatDate = (dateString: string) => {
@@ -338,11 +339,10 @@ export default function UltimateShieldScanner() {
     return config.direction === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />;
   };
 
-  // JSX (same as before but with updated button)
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="container mx-auto px-4 py-8">
-        {/* Header unchanged */}
+        {/* Header */}
         <div className="text-center mb-10">
           <div className="flex justify-center items-center mb-4">
             <div className="relative">
@@ -369,7 +369,7 @@ export default function UltimateShieldScanner() {
           </div>
         </div>
 
-        {/* Scanner Card with refresh button */}
+        {/* Scanner Card */}
         <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-200">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
@@ -685,7 +685,7 @@ export default function UltimateShieldScanner() {
                 </div>
               </div>
 
-              {/* Suspicious Transactions Table with sorting and pagination */}
+              {/* Suspicious Transactions Table */}
               {scanResult.suspicious_transactions && scanResult.suspicious_transactions.length > 0 && (
                 <div className="mb-10">
                   <h4 className="text-lg font-semibold text-gray-900 mb-6 pb-3 border-b border-gray-200 flex items-center">
@@ -717,7 +717,7 @@ export default function UltimateShieldScanner() {
                               </a>
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-900">{new Date(tx.date).toLocaleDateString()}</td>
-                            <td className="px-6 py-4 text-sm text-gray-900">{tx.amount_btc.toFixed(8)}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{formatBTC(tx.amount_btc)}</td>
                             <td className="px-6 py-4 text-sm text-red-600">{tx.reason}</td>
                           </tr>
                         ))}
@@ -734,7 +734,7 @@ export default function UltimateShieldScanner() {
                 </div>
               )}
 
-              {/* Related Addresses Table with sorting */}
+              {/* Related Addresses Table */}
               {scanResult.related_addresses && scanResult.related_addresses.length > 0 && (
                 <div className="mb-10">
                   <h4 className="text-lg font-semibold text-gray-900 mb-6 pb-3 border-b border-gray-200 flex items-center">
@@ -763,7 +763,7 @@ export default function UltimateShieldScanner() {
                         {sortedAddrs.map((addr, idx) => (
                           <tr key={idx}>
                             <td className="px-6 py-4 text-sm font-mono">{addr.address.slice(0, 10)}...{addr.address.slice(-8)}</td>
-                            <td className="px-6 py-4 text-sm text-gray-900">{addr.total_value.toFixed(8)}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{formatBTC(addr.total_value)}</td>
                             <td className="px-6 py-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 addr.risk_score >= 70 ? 'bg-red-100 text-red-800' :
@@ -848,7 +848,7 @@ export default function UltimateShieldScanner() {
               </div>
             </div>
 
-            {/* Footer with updated PDF button */}
+            {/* Footer with PDF buttons */}
             <div className="bg-gray-50 px-8 py-6 border-t border-gray-300">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="text-gray-600">
@@ -872,7 +872,7 @@ export default function UltimateShieldScanner() {
           </div>
         )}
 
-        {/* Footer Note unchanged */}
+        {/* Footer Note */}
         <div className="max-w-4xl mx-auto mt-12 text-center">
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200">
             <h3 className="text-xl font-bold text-gray-900 mb-3">🚀 Pre-Funding MVP</h3>
