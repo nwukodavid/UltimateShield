@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import ReportButton from '@/components/ReportButton';  // <-- NEW IMPORT
 
 // Interface matching /api/scan/detail response
 type DetailedScanResult = {
@@ -615,6 +616,8 @@ export default function UltimateShieldScanner() {
                       </div>
                     </div>
                     <div className="flex gap-3">
+                      {/* Report Button added here */}
+                      <ReportButton address={scanResult.address} />
                       <button
                         onClick={() => navigator.clipboard.writeText(scanResult.address)}
                         className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center"
